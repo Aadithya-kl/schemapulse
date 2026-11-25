@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache: true
+
+      - name: Check formatting
+        run: |
+          test -z "$(gofmt -l .)"
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run tests
+        run: go test -race -v ./...
+
+      - name: Build binary
+        run: go build -ldflags="-s -w" -o schemapulse ./cmd/schemapulse
+
+      - name: Smoke test CLI
+        run: |
+          ./schemapulse version
+          ./schemapulse rules
+          ./schemapulse check ./testdata/migrations/safe
+          ./schemapulse check --fail-on none ./testdata/migrations/risky
