@@ -5,6 +5,7 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   test-and-build:
@@ -16,12 +17,17 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
-          cache: true
+          go-version-file: "go.mod"
+          cache: false
 
       - name: Check formatting
         run: |
-          test -z "$(gofmt -l .)"
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "Unformatted files:"
+            echo "$unformatted"
+            exit 1
+          fi
 
       - name: Run go vet
         run: go vet ./...
