@@ -1,12 +1,9 @@
-﻿# Binaries & build artifacts
-bin/
-dist/
-schemapulse
-schemapulse.exe
+# Binaries and test artifacts
+/schemapulse
+/schemapulse.exe
 coverage.out
+*.test
 
-# IDE & OS files
-.idea/
-.vscode/
+# OS / editor artifacts
 .DS_Store
 Thumbs.db
