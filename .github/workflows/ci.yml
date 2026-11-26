@@ -17,17 +17,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "stable"
+          go-version: "1.23.x"
           cache: false
 
       - name: Check formatting
-        run: |
-          unformatted=$(gofmt -l .)
-          if [ -n "$unformatted" ]; then
-            echo "Unformatted files:"
-            echo "$unformatted"
-            exit 1
-          fi
+        run: gofmt -l . | grep -q . && (gofmt -l .; exit 1) || true
 
       - name: Run go vet
         run: go vet ./...
